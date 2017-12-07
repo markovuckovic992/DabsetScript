@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block head %}
+   <title>Blacklist</title>
+   <script type="text/javascript" src="/static/js/other.js"></script>
+{% endblock %}
+{% block content %}
+    <table class="table" style="margin-left: 20%; width: 60%;">
+      <thead>
+        <tr>
+          <td style="text-align: center; background: rgba(0,255,0,0.4);">
+            <input type="text" id='super_blacklist' />
+          </td>
+        </tr>        
+        <tr>
+          <td colspan="2" style="text-align: center; background: rgba(255,0,0,0.4);">
+            <input type="button" onclick="super_blacklist()" name="" value="Domain"/>
+            <input type="button" onclick="regular_blacklist()" name="" value="Email adress"/>
+          </td>
+        <tr>
+      </thead>
+    </table>
+    <table border="1px solid">
+      <tr>
+        <th colspan="2">
+          Blacklisted emails
+        </th>
+      </tr>
+      {% for item in blacklist %}
+      <tr>
+        <td>{{item.email}}</td>
+        <td><button onclick="remove_from_blacklist({{item.id}}, 1)">Remove</button></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <table>
+      <th colspan="2">
+          Blacklisted domains
+        </th>
+      {% for item in superblacklist %}
+      <tr>
+        <td>{{item.domain}}</td>
+        <td><button onclick="remove_from_blacklist({{item.id}}, 2)">Remove</button></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <script type="text/javascript">      
+      $("#Super").addClass('active');
+      $("#Base").removeClass();
+      $( document ).ready(function() {
+          $("#log_div").hide();
+      });
+    </script>
+{% endblock %}

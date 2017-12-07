@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block head %}
+   <title>manual</title>
+   <script type="text/javascript" src="/static/js/other.js"></script>
+{% endblock %}
+{% block content %}
+    <p>
+      You can upload results from whois.sh script here
+    </p>
+    <table class="table" style="margin-left: 20%; width: 60%;">
+      <thead>
+        <tr>
+          <td style="text-align: center; background: rgba(0,0,255,0.4);"><input type="file" id='red_file_name'  name="red file"/></td>
+          <td style="text-align: center; background: rgba(0,0,255,0.4);">CSV file name</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: center; background: rgba(255,0,0,0.4);">
+            <input type="button" onclick="add_manual_whois()" name="" value="Enter emails"/>
+          </td>
+        <tr>
+      </thead>
+    </table>
+    <script type="text/javascript">
+      $("#MAN").addClass('active');
+      $("#Base").removeClass();
+      $( document ).ready(function() {
+        $("#log_div").hide();
+      });
+    </script>
+{% endblock %}

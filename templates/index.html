@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block head %}
+    <title>Script</title>
+    <script type="text/javascript" src="/static/js/other.js"></script>
+{% endblock %}
+{% block content %}
+    {% csrf_token %}
+    <div class="container">
+
+        <form action="/start_process/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group col-sm-12 row">
+                <label for="keywords"></label>
+                <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Enter keywords and separate then with ','...">
+            </div>
+
+            <div class="form-group col-sm-12 row">
+                <label id="label_zone_file_one" class="btn btn-default btn-file col-sm-3 labels" for="zone_file_one">
+                    <span id="span_zone_file_one">Chose zone file one</span>
+                    <input id="zone_file_one" name="zone_file_one" class="file_container" style="display: none;" type="file">
+                </label>
+
+                <label id="label_zone_file_two" class="btn btn-default btn-file col-sm-3 labels" for="zone_file_two">
+                    <span id="span_zone_file_two">Chose zone file two</span>
+                    <input type="file" id="zone_file_two" name="zone_file_two" class="file_container" style="display: none;">
+                </label>
+
+                <label id="label_zone_file_three" class="btn btn-default btn-file col-sm-3 labels" for="zone_file_three">
+                    <span id="span_zone_file_three">Chose zone file three</span>
+                    <input type="file" id="zone_file_three" name="zone_file_three" class="file_container" style="display: none;">
+                </label>
+
+                <label id="label_zone_file_four" class="btn btn-default btn-file col-sm-3 labels" for="zone_file_four">
+                    <span id="span_zone_file_four">Chose zone file four</span>
+                    <input type="file" id="zone_file_four" name="zone_file_four" class="file_container" style="display: none;">
+                </label>
+            </div>
+
+            <div class="form-group col-sm-12 row">
+                <button type="submit" class="btn btn-primary">Start Process</button>
+            </div>
+        </form>
+
+    </div>
+    <script type="text/javascript">
+      $( function() {
+        $( "#datepicker" ).datepicker();
+        $( "#datepicker" ).datepicker("option", "dateFormat", 'dd-mm-yy');
+
+        $('#redempion_row_1').bind('change', function(){
+          changeSetting($(this).attr('id'), $(this).val());
+        });
+
+        $('#redempion_row_2').bind('change', function(){
+          changeSetting($(this).attr('id'), $(this).val());
+        });
+
+        // $('.labels').on('click', function(event) {
+        //     var id = $(this).attr('id').replace('label_', '');
+        //     $('#' + id).val('').clone(true);
+        // });
+
+        $('.file_container').on('change', function (event) {
+            var id = $(this).attr('id');
+            var elem = $('#label_' + id);
+            var text = elem.text().trim();
+            var new_text = $(this).val().replace('C:\\fakepath\\', '');
+            var html = $('#span_' + id).html(new_text);
+        });
+
+        $('.setting[type="radio"], .setting[type="number"]').bind('change', function(){
+          changeSetting($(this).attr('id'), $(this).val());
+        });
+
+        $('.setting[type="checkbox"]').change(function(){
+          this.value = (Number(this.checked));
+          if ($(this).attr('value') == 1) {
+            $('#cover_2').css('display', 'none');
+          } else {
+            $('#cover_2').css('display', 'block');
+          }
+          changeSetting($(this).attr('id'), $(this).attr('value'));
+        });
+      } );
+    </script>
+{% endblock %}

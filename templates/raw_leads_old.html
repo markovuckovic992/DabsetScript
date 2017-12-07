@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block head %}
+    <title>Filtering</title>
+    <script type="text/javascript" src="/static/js/raw_leads.js"></script>
+    <script src="/static/js/el-pagination.js"></script>
+{% endblock %}
+{% block content %}
+    <div style="position: fixed; top: 50px; right: 20px">
+      <span id="counter"></span> out of {{total_raw}}
+    </div>
+    {% csrf_token %}
+   Date: <input type="text" id="datepicker" onchange="load()">
+   <button onclick="truncate_raw()">Truncate</button>
+   <button onclick="select_all()">Select All</button>
+   <button onclick="un_select_all()">Un Select All</button>
+   Show page:
+   {% for i in range %}
+        <button id="button_{{i}}" class="buttons" onclick="show({{i}})">{{ i }}</button>
+   {% endfor %}
+    <select id="filter_by_dom" onclick="filter_by_dom()">
+      <option value="">-All-</option>
+      <option value=".com">.COM</option>
+      <option value=".net">.NET</option>
+    </select>
+    <select id="filter_by_list_no" onchange="filter_by_list_no()">
+      <option value="1" {%if list_no == 1 %} selected {%endif%}>Redemption List One</option>
+      <option value="2" {%if list_no == 2 %} selected {%endif%}>Redemption List Two</option>
+      <option value="3" {%if list_no == 3 %} selected {%endif%}>Redemption List Three</option>
+    </select>
+    <button onclick="find_active()">find active</button>
+    <a href="/raw_leads_all/?date={{date}}&pages={{page}}&list_no={{list_no}}">Show All</a>
+    {% if raw_leads|length > 0 %}
+    <table id="mytable" class="sortable">
+  <thead>
+    <tr>
+      <th>
+        &nbsp;
+      </th>
+      <th>
+        Zone file domain
+      </th>
+      <th class='no-sort'>
+        Mark as good
+      </th>
+      <th>
+        Domain to sell
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+		{% block js %}
+		    {{ block.super }}
+		    <script>
+		        $.endlessPaginate({paginateOnScroll: true});
+		    </script>
+		{% endblock %}
+	    {% include page_template %}
+  </tbody>
+</table>
+{% endif %}
+    <table>
+      <tbody>
+        <tr>
+          <td colspan="3" align="center"><input type="button" onclick="find_mails()" value="Submit"/></td>
+        </tr>
+      </tbody>
+    </table>
+    <script type="text/javascript">
+      // $( document ).ready(function() {
+      //     document.body.addEventListener('click', function() {
+      //       setTimeout(function(){
+      //           var count = $(":checkbox:checked").length;
+      //           $("#counter").html(count);
+      //       }, 1000);
+      //     }, true);
+      // });
+    </script>
+    <script type="text/javascript">
+      $( function() {
+        $("#button_{{page}}").css({"background-color": "LightGreen"})
+
+        var selected_date = (window.location.search).replace('?date=', '').split("-");
+        var temp;
+        if (selected_date[2] && selected_date[2].indexOf('&') !== -1) {
+            temp = (selected_date[2].split('&', 1))[0]
+        } else {
+            temp = selected_date[2]
+        }
+        var new_date = new Date(temp, selected_date[1] - 1, selected_date[0]);
+        $( "#datepicker" ).datepicker().datepicker("setDate", new_date);
+        $( "#datepicker" ).datepicker("option", "dateFormat", 'dd-mm-yy');
+
+      } );
+      $("#Filt").addClass('active');
+      $("#Base").removeClass();
+    </script>
+{% endblock %}

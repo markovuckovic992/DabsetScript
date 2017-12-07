@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block head %}
+    <title>Filtering</title>
+    <script type="text/javascript" src="/static/js/raw_leads.js"></script>
+    <script src="/static/js/el-pagination.js"></script>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div style="position: fixed; top: 50px; right: 20px">
+          <span id="counter"></span> out of {{total_raw}}
+        </div>
+        {% csrf_token %}
+        <div class="text-left">
+            <button class="btn btn-default" onclick="truncate_raw()">Truncate</button>
+            <button class="btn btn-default" onclick="select_all()">Select All</button>
+            <button class="btn btn-default" onclick="un_select_all()">Un Select All</button>
+        </div>
+        <table id="raw_leads_table" class="sortable">
+            <thead>
+                <tr>
+                    <th>Keyword</th>
+                    <th>Domain</th>
+                    <th>Has Video?</th>
+                    <th>Is Mobile Friendly?</th>
+                    <th>Time of gathering</th>
+                    <th>Mark as Good</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+        <div class="col-sm-1 col-sm-offset-5">
+            <table>
+              <tbody>
+                <tr>
+                  <td colspan="3" align="center"><input type="button" class="btn btn-danger" onclick="mark_as_good()" value="Submit"/></td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript">
+      $( function() {
+        $('#raw_leads_table').DataTable({
+            searching: true,
+            stateSave: true,
+            paging: false,
+            pageLength: 5000,
+
+            "aoColumnDefs" : [
+                {
+                   // 'bSortable' : false,
+                   'aTargets' : [ 'no-sort' ]
+                }
+            ],
+
+            "order": [[ 2, "asc" ]],
+
+            "fnDrawCallback": function( oSettings ) {
+
+            },
+        });
+      } );
+      $("#Filt").addClass('active');
+      $("#Base").removeClass();
+    </script>
+{% endblock %}

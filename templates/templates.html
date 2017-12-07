@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block head %}
+    <title>Templates</title>
+{% endblock %}
+{% block content %}
+    <div class="container text-center">
+        <form class="well form-horizontal" action="/make_new_template/" method="post"  id="contact_form">
+            {% csrf_token %}
+            <fieldset>
+                <legend>
+                    <div style="float: left">Template generation form</div>
+                </legend>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label required">Subject</label>
+                    <div class="col-sm-10 inputGroupContainer">
+                        <div class="input-group">
+                            <span class="input-group-addon"></span>
+                            <input name="subject" placeholder="" required class="form-control" type="text" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('Ovo polje mora biti popunjeno')">
+                        </div>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label required">Body</label>
+                    <div class="col-sm-10 inputGroupContainer">
+                        <div class="input-group">
+                            <span class="input-group-addon"></span>
+                            <textarea class="text" cols="140" rows ="20" name="body"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-warning" id="submit_form_button">Save <span class="glyphicon glyphicon-submit"></span></button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <script type="text/javascript">
+      $("#Temp").addClass('active');
+      $("#Base").removeClass();
+    </script>
+{% endblock %}

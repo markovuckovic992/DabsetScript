@@ -1,0 +1,98 @@
+#cover {
+	position: fixed;
+	padding: 0;
+	margin: 0;
+
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	opacity: 0.80;
+    background-image: url("/static/img/processing_page.jpg") !important;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+	/*background: #aaa !important;*/
+	z-index: 10;
+	display: none;
+}
+
+#cover_2 {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  opacity: 0.80;
+    background: #000000 !important;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  /*background: #aaa !important;*/
+  z-index: 10;
+}
+
+#mytable {
+  width: 100%;
+}
+
+.hide {
+    display: none;
+}
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
+table.sortable > tbody > tr > td {
+	padding-left: 10px;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+th {
+    text-align: center;
+}
+
+#log_div {
+  background-color: #333;
+  color: white;
+  height: 200px;
+  width: 200px;
+  z-index: 9999;
+  margin-top: 0px;
+  position: absolute;
+  top:0;
+  right:0;
+  text-align: left;
+  padding-left: 5px;
+}
+
+table.sortable > tbody {
+    counter-reset: rowNumber;
+}
+
+table.sortable > tbody > tr {
+    counter-increment: rowNumber;
+}
+
+input[type="checkbox"] {
+  margin: 0 auto;
+  display:block;
+}
+
+.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:focus, .navbar-inverse .navbar-nav > .active > a:hover {
+    background-color: transparent;
+}
