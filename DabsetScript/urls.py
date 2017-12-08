@@ -28,7 +28,11 @@ urlpatterns = [
     url(r'^tuncate_leads/', backend.views.tuncateLeads),
     # Active Leads
     url(r'^active_leads/', backend.views.activeLeads),
+    # Sent Leads
+    url(r'^sent_leads/', backend.views.sentLeads),
     # Templates
     url(r'^templates/', backend.views.templatesHome),
-    url(r'^make_new_template/', backend.views.makeNewTemplate),
+    url(r'^save_template/', backend.views.saveTemplate),
+    # Logs
+    url(r'^logs/', backend.views.logs),
 ]

@@ -28,6 +28,16 @@
             </thead>
 
             <tbody>
+                {% for lead in leads %}
+                    <tr>
+                        <td>{{ lead.keywords }}</td>
+                        <td>{{ lead.domain }} </td>
+                        <td>{{ lead.has_video }} </td>
+                        <td>{{ lead.is_mobile_friendly }} </td>
+                        <td>{{ lead.date|date:"M d, Y" }} </td>
+                        <td><input type="checkbox" class="form-control" id="{{ lead.id }}"/></td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
         <div class="col-sm-1 col-sm-offset-5">

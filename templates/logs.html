@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block head %}
+   <title>Logs</title>
+    <script type="text/javascript" src="/static/js/active_leads.js"></script>
+{% endblock %}
+{% block content %}
+    {% csrf_token %}
+    <div class="container">
+        <table id="logs_leads_table" class="sortable">
+            <thead>
+                <tr>
+                    <th>Keyword</th>
+                    <th>Domain</th>
+                    <th>Email</th>
+                    <th>Field thats changed</th>
+                    <th>Old value</th>
+                    <th>New value</th>
+                    <th>Time of change</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td> {{ log.lead.keywords }} </td>
+                        <td> {{ log.lead.domain }} </td>
+                        <th> {{ log.lead.email }} </th>
+                        <th> {{ log.field_thats_changed }} </th>
+                        <th> {{ log.old_value }} </th>
+                        <th> {{ log.new_value }} </th>
+                        <th> {{ log.lead.datetime_of_last_change|date:"M d, Y H:i" }} </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">
+      $( document ).ready(function() {
+
+      });
+    </script>
+    <script type="text/javascript">
+      $( function() {
+        $('#logs_leads_table').DataTable({
+            searching: true,
+            stateSave: true,
+
+            paging: true,
+            lengthMenu: [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
+            pageLength: 500,
+
+            "aoColumnDefs" : [
+                {
+                   'bSortable' : false,
+                   'aTargets' : [ 'no-sort' ]
+                }
+            ],
+            "fnDrawCallback": function( oSettings ) {
+
+            },
+        });
+      } );
+      $("#Logs").addClass('active');
+      $("#Base").removeClass();
+    </script>
+{% endblock %}

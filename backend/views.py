@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect
 
+from backend.models import Template, Lead, LeadType, ActionLogs
 # from scripts import startScript
 
 def home(request):
@@ -31,7 +32,9 @@ def startProcess(request):
 
 
 def rawLeads(request):
-    return render(request, 'raw_leads.html', {})
+    raw_lead_type = LeadType.objects.get(name='raw_lead')
+    leads = Lead.objects.filter(lead_type=raw_lead_type)
+    return render(request, 'raw_leads.html', {'leads': leads})
 
 
 def markAsGood(request):
@@ -50,26 +53,47 @@ def tuncateLeads(request):
 
 
 def activeLeads(request):
-    return render(request, 'active_leads.html', {})
+    active_lead_type = LeadType.objects.get(name='active_lead')
+    leads = Lead.objects.filter(lead_type=active_lead_type)
+    return render(request, 'active_leads.html', {'leads': leads})
 
 
 def templatesHome(request):
     return render(request, 'templates.html', {})
 
 
-def makeTemplate(subject, body):
+def makeTemplate(subject, body, name):
     body = body.encode('utf-8')
-    template = Template(
-        name=name,
-        body=body,
-        subject=subject,
-    )
-    template.save()
+    try:
+        template = Template.objects.get(name=name)
+        template.body = body
+        template.subject = subject
+        template.save()
+    except:
+        template = Template(
+            name=name,
+            body=body,
+            subject=subject,
+        )
+        template.save()
+
+    return 'success'
 
 
-def makeNewTemplate(request):
+def saveTemplate(request):
     body = request.POST['body']
     subject = request.POST['subject']
+    name = request.POST['name']
 
-    makeTemplate(subject, body)
+    makeTemplate(subject, body, name)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def sentLeads(request):
+    sent_lead_type = LeadType.objects.get(name='sent_lead')
+    leads = Lead.objects.filter(lead_type=sent_lead_type)
+    return render(request, 'sent_leads.html', {'leads': leads})
+
+def logs(request):
+    logs = ActionLogs.objects.all().order_by('-id')[:1000]
+    return render(request, 'logs.html', {'logs': logs})

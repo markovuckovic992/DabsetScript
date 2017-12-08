@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block head %}
-   <title>Sending</title>
+   <title>Sent leads</title>
     <script type="text/javascript" src="/static/js/active_leads.js"></script>
 {% endblock %}
 {% block content %}
     {% csrf_token %}
     <div class="container">
-        <table id="active_leads_table" class="sortable">
+        <table id="sent_leads_table" class="sortable">
             <thead>
                 <tr>
                     <th>Keyword</th>
@@ -16,6 +16,8 @@
                     <th>Has video?</th>
                     <th>Is mobile friendly?</th>
                     <th>Template name</th>
+                    <th>Number of sendings</th>
+                    <th>Date and time of last sending</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +37,8 @@
                                 {% endfor %}
                             </select>
                         </td>
+                        <th> {{ lead.sent_count }} </th>
+                        <th> {{ lead.datetime_of_last_change|date:"M d, Y H:i" }} </th>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -43,7 +47,7 @@
             <table>
                 <tbody>
                     <tr>
-                        <td colspan="6" align="center"><input class="btn btn-danger" type="button" onclick="send_mails()" value="Send"/></td>
+                        <td colspan="6" align="center"><input class="btn btn-danger" type="button" onclick="send_mails()" value="Send Again"/></td>
                     </tr>
                 </tbody>
             </table>
@@ -56,7 +60,7 @@
     </script>
     <script type="text/javascript">
       $( function() {
-        $('#active_leads_table').DataTable({
+        $('#sent_leads_table').DataTable({
             searching: true,
             stateSave: true,
 
@@ -75,7 +79,7 @@
             },
         });
       } );
-      $("#Send").addClass('active');
+      $("#Sent").addClass('active');
       $("#Base").removeClass();
     </script>
 {% endblock %}
