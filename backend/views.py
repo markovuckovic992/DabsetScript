@@ -5,7 +5,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect
 
 from backend.models import Template, Lead, LeadType, ActionLogs
-# from scripts import startScript
+from script import process
+from custom_email import customEmail
 
 def home(request):
     return render(request, 'index.html', {})
@@ -26,8 +27,8 @@ def startProcess(request):
     for kw in kws:
         keywords.append(''.join(kw.split()))
 
-    print files, keywords
-    # startScript(files, keywords)
+    # print files, keywords
+    process(keywords, files)
     return HttpResponseRedirect('/raw_leads/')
 
 
@@ -42,7 +43,6 @@ def markAsGood(request):
     ids = request.POST.get('ids')
     jd = json.dumps(ids)
     ids = eval(json.loads(jd))
-    print ids
     # end of function
     return HttpResponseRedirect('/raw_leads/')
 
@@ -94,6 +94,20 @@ def sentLeads(request):
     leads = Lead.objects.filter(lead_type=sent_lead_type)
     return render(request, 'sent_leads.html', {'leads': leads})
 
+
 def logs(request):
     logs = ActionLogs.objects.all().order_by('-id')[:1000]
     return render(request, 'logs.html', {'logs': logs})
+
+
+def sendEmails(request):
+    smtpSender = customEmail()
+    ids = request.POST.get('ids')
+    jd = json.dumps(ids)
+    ids = eval(json.loads(jd))
+
+    for _id in ids:
+        lead = Lead.objects.get(id=_id)
+        smtpSender.sendEmail(lead.mail, lead.template)
+
+    smtpSender.close()
