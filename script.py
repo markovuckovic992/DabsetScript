@@ -20,17 +20,19 @@ def checkIsMobileFriendly(domain):
 def checkIfHasVideo(domain):
     url = 'http://' + domain
     resp = requests.get(url)
-    soup = BS(page.content)
-    videos = soup.find_all("video")
-
-    if len(video):
+    soup = BS(resp.content)
+    videos = soup.findAll("embed","object","param","video")
+    print videos
+    if len(videos):
         return True
     else:
         return False
 
 def getEmail(domain):
     tube = popen('./whois.sh ' + domain)
-    return tube.read()
+    response = tube.read()
+    return response.replace('Registrant Email:', '').lstrip().rstrip()
+
 
 def process(keywords, zone_files):
     lead_type = LeadType.objects.get(name="raw_lead")
@@ -66,3 +68,19 @@ def process(keywords, zone_files):
             })
 
     saveData(dicts)
+
+
+def test(url):
+    from selenium.webdriver.chrome.options import Options
+    from selenium import webdriver
+    import os
+
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+
+    driver = webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver")
+    driver.get(url) 
+
+    soup = BS(driver.page_source)
+    videos = soup.findAll("embed","object","param","video")
+    print videos
