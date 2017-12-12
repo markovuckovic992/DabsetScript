@@ -93,8 +93,11 @@ def test(url):
         element = WebDriverWait(driver, 1).until(
             EC.presence_of_element_located((By.ID, "page-container"))
         )
-        print element.find_elements_by_class_name("html5-video-container")
+        time.sleep(100)
+
+        divs = driver.find_elements_by_class_name("html5-video-container")
+        print divs
     finally:
-        driver.quit()
+        pass
 
     print '--------------'
