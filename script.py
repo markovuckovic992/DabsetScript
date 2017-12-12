@@ -72,15 +72,29 @@ def process(keywords, zone_files):
 
 def test(url):
     from selenium.webdriver.chrome.options import Options
+
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+
     from selenium import webdriver
     import os
+    import time
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
 
-    driver = webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver")
-    driver.get(url) 
+    driver = webdriver.Chrome(executable_path="chromedriver.exe")
+    driver.get(url)
+    # time.sleep(25)
+    # divs = driver.find_elements_by_class_name("html5-video-container")
 
-    soup = BS(driver.page_source)
-    videos = soup.findAll("embed","object","param","video")
-    print videos
+    try:
+        element = WebDriverWait(driver, 1).until(
+            EC.presence_of_element_located((By.ID, "page-container"))
+        )
+        print element.find_elements_by_class_name("html5-video-container")
+    finally:
+        driver.quit()
+
+    print '--------------'
