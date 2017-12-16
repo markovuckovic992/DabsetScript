@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from datetime import datetime
+
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect
@@ -33,8 +35,12 @@ def startProcess(request):
 
 
 def rawLeads(request):
+    if 'date' in request.GET:
+        date = datetime.strptime(request.GET['date'], '%d-%m-%Y')
+    else:
+        date = datetime.now().date()
     raw_lead_type = LeadType.objects.get(name='raw_lead')
-    leads = Lead.objects.filter(lead_type=raw_lead_type)
+    leads = Lead.objects.filter(lead_type=raw_lead_type, date=date)
     return render(request, 'raw_leads.html', {'leads': leads})
 
 
@@ -59,33 +65,46 @@ def activeLeads(request):
 
 
 def templatesHome(request):
-    return render(request, 'templates.html', {})
+    if 'template_id' in request.GET:
+        template = Template.objects.get(id=request.GET['template_id'])
+    else:
+        template = {}
+    templates = Template.objects.all()
+    return render(request, 'templates.html', {'templates': templates, 'template': template})
 
 
 def makeTemplate(subject, body, name):
     body = body.encode('utf-8')
-    try:
-        template = Template.objects.get(name=name)
-        template.body = body
-        template.subject = subject
-        template.save()
-    except:
-        template = Template(
-            name=name,
-            body=body,
-            subject=subject,
-        )
-        template.save()
+    template = Template(
+        name=name,
+        body=body,
+        subject=subject,
+    )
+    template.save()
 
     return 'success'
 
+def updateTemplate(subject, body, name, id):
+    template = Template.objects.get(id=id)
+    template.name = name
+    template.body = body
+    template.subject = subject
+    template.save()
+
+    return 'success'
 
 def saveTemplate(request):
     body = request.POST['body']
     subject = request.POST['subject']
     name = request.POST['name']
+    id = int(request.POST['id'])
 
-    makeTemplate(subject, body, name)
+    if id != 0:
+        updateTemplate(subject, body, name, id)        
+    else:
+        makeTemplate(subject, body, name)
+
+    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 

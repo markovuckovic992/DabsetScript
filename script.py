@@ -3,7 +3,10 @@ from bs4 import BeautifulSoup as BS
 from os import popen
 from selenium import webdriver
 import json
-# from backend.models import Lead, LeadType
+import whois
+
+from django.utils import timezone
+from backend.models import Lead, LeadType
 
 
 def saveData(dicts):
@@ -13,16 +16,46 @@ def saveData(dicts):
 
 
 def checkIsMobileFriendly(domain):
-    url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
-    resp = requests.get(url)
-    resp = resp.json()
-    return resp['ruleGroups']['USABILITY']['pass']
+    try:
+        url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
+        resp = requests.get(url)
+        resp = resp.json()
+        return resp['ruleGroups']['USABILITY']['pass']
+    except:        
+        url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
+        resp = requests.get(url)
+        resp = resp.json()
+
+        try:
+            return resp['ruleGroups']['USABILITY']['pass']
+        except:
+            return -1
 
 
-def checkIfHasVideo(domain):
+def checkIfHasVideo(domain, driver):
     url = 'https://' + domain
-    driver = webdriver.PhantomJS()
-    driver.get(url)
+
+    try:
+        resp = requests.get(url)
+        condition = True if int(resp.status_code) == 200 else False
+    except:
+        condition = False
+
+    if condition:
+        driver.get(url)
+    else:
+        condition = True
+        url = 'http://' + domain
+        try:
+            resp = requests.get(url)
+            condition = True if int(resp.status_code) == 200 else False            
+        except:
+            condition = False
+        if condition:
+            driver.get(url)
+        else:
+            return -1
+
     soup = BS(driver.page_source, 'lxml')
     videos = soup.find_all(["embed","object","param","video", "iframe"])
     if len(videos):
@@ -31,12 +64,21 @@ def checkIfHasVideo(domain):
         return False
 
 def getEmail(domain):
-    tube = popen('./whois.sh ' + domain)
-    response = tube.read()
-    return response.replace('Registrant Email:', '').lstrip().rstrip()
+    try:    
+        emails = whois.whois(domain).emails  
+        for email in emails:
+            if len(email) < 30:
+                return email
+        return -1
+    except:
+        return -1
+    # tube = popen('./whois.sh ' + domain)
+    # response = tube.read()
+    # return response.replace('Registrant Email:', '').lstrip().rstrip()
 
 
-def process(keywords, zone_files):
+def process(keywords, zone_files):    
+    driver = webdriver.PhantomJS()
     lead_type = LeadType.objects.get(name="raw_lead")
     dicts = []
 
@@ -55,54 +97,27 @@ def process(keywords, zone_files):
             has_video = False
             if checkIsMobileFriendly(line):
                 is_mobile_friendly = True
-            if checkIfHasVideo(line):
+            if checkIfHasVideo(line, driver):
                 has_video = True
 
             mail = getEmail(line)
-            dicts.append({
-                'keywords': keywords,
-                'domain': line,
-                'mail': mail,
-                'has_video': has_video,
-                'is_mobile_friendly': is_mobile_friendly,
-                'lead_type': lead_type,
-                'datetime_of_last_change': timezone.now(),
-            })
+
+            if mail != -1 and has_video != -1 and has_video != -1:
+                kwrds = ''
+                for keyword in keywords:
+                    kwrds += keyword + ' '
+                dicts.append({
+                    'keywords': kwrds,
+                    'domain': line,
+                    'mail': mail,
+                    'has_video': has_video,
+                    'is_mobile_friendly': is_mobile_friendly,
+                    'lead_type': lead_type,
+                    'datetime_of_last_change': timezone.now(),
+                })
 
     saveData(dicts)
 
 
-def test(url):
-    from selenium.webdriver.chrome.options import Options
-
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-
-    import os
-    import time
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-
-    driver = webdriver.PhantomJS()
-    driver.get(url)
-    soup = BS(driver.page_source, 'lxml')
-    divs = soup.findAll("iframe")
-    print divs
-
-    # try:
-    #     element = WebDriverWait(driver, 1).until(
-    #         EC.presence_of_element_located((By.ID, "page-container"))
-    #     )
-    #     time.sleep(100)
-
-    #     divs = driver.findAll("iframe")
-    #     print divs
-    # finally:
-    #     pass
-
-    # print '--------------'
-
 if __name__ == "__main__":
-    print checkIsMobileFriendly('fplalerts.com/')
+    print getEmail('youtube.com')

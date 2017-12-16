@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load backend_tags %}
 {% block head %}
     <title>Templates</title>
 {% endblock %}
@@ -25,7 +26,7 @@
                             <div class="col-sm-10 inputGroupContainer">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input name="name" placeholder="" required class="form-control" type="text">
+                                    <input name="name" placeholder="" required class="form-control" type="text" value="{{ template.name|default:'' }}">
                                 </div>
                             </div>
                         </div>
@@ -36,7 +37,7 @@
                             <div class="col-sm-10 inputGroupContainer">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input name="subject" placeholder="" required class="form-control" type="text">
+                                    <input name="subject" placeholder="" required class="form-control" type="text" value="{{ template.subject|default:'' }}">
                                 </div>
                             </div>
                         </div>
@@ -47,11 +48,13 @@
                             <div class="col-sm-10 inputGroupContainer text-left">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <textarea class="text" cols="150" rows ="20" name="body"></textarea>
+                                    <textarea class="text" style="width: 100%;" rows ="11" name="body">{{ template.body|default:'' }}</textarea>
                                 </div>
                             </div>
                         </div>
                         <hr />
+
+                        <input name="id" class="form-control" type="hidden" value="{{ template.id|default:0 }}">
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label"></label>

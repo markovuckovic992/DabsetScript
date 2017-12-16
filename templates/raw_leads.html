@@ -11,6 +11,7 @@
         </div>
         {% csrf_token %}
         <div class="text-left">
+            <input type="text" id="datepicker" class="form-control" style="width: 150px; float: left; margin-right: 5px;" onchange="load_raw()" placeholder="Select date...">
             <button class="btn btn-default" onclick="truncate_raw()">Truncate</button>
             <button class="btn btn-default" onclick="select_all()">Select All</button>
             <button class="btn btn-default" onclick="un_select_all()">Un Select All</button>
@@ -35,7 +36,7 @@
                         <td>{{ lead.has_video }} </td>
                         <td>{{ lead.is_mobile_friendly }} </td>
                         <td>{{ lead.date|date:"M d, Y" }} </td>
-                        <td><input type="checkbox" class="form-control" id="{{ lead.id }}"/></td>
+                        <td><input type="checkbox" class="form-control lead_checkbox" id="{{ lead.id }}"/></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -71,6 +72,10 @@
 
             },
         });
+        var selected_date = (window.location.search).replace('?date=', '').split("-");
+        var new_date = new Date(selected_date[2], selected_date[1] - 1, selected_date[0]);
+        $( "#datepicker" ).datepicker().datepicker("setDate", new_date);
+        $( "#datepicker" ).datepicker("option", "dateFormat", 'dd-mm-yy');        
       } );
       $("#Filt").addClass('active');
       $("#Base").removeClass();

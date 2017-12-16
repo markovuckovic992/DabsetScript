@@ -24,7 +24,7 @@ class LeadType(models.Model):
 class Lead(models.Model):
     keywords = models.CharField(max_length=100)
     domain = models.CharField(max_length=100)
-    mail = models.CharField(max_length=30, blank=True, null=True)
+    mail = models.CharField(max_length=100, blank=True, null=True)
     has_video = models.SmallIntegerField(default=0)
     is_mobile_friendly = models.SmallIntegerField(default=0)
 

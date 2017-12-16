@@ -1,10 +1,9 @@
 var csrftoken = getCookie('csrftoken');
 var lastChecked = null;
 
-function load() {
-    var list_no = $("#filter_by_list_no").val();
+function load_raw() {
     var date = $("#datepicker").val();
-    window.location.href=('/raw_leads/?date=' + date + '&pages=1&list_no=' + list_no);
+    window.location.href=('/raw_leads/?date=' + date);
 };
 
 function truncate_raw() {
@@ -234,47 +233,9 @@ function mark_as_good() {
 };
 
 function select_all() {
-    $("#cover").fadeIn(100);
-    var list_no = $("#filter_by_list_no").val();
-    var date = $("#datepicker").val()
-    $.ajax({
-        type: "POST",
-        url: "/mark_to_active/",
-        headers: {
-            'X-CSRFToken': csrftoken
-        },
-        data: "date=" + date + "&list_no=" + list_no,
-        success: function(msg){
-            $('input:checkbox').prop('checked', true);
-            var count = $(":checkbox:checked").length;
-            $("#counter").html(count);
-            $("#cover").fadeOut(100);
-        },
-        error: function(ts) {
-            alert(ts.responseText)
-        },
-    });
+    $(':checkbox.lead_checkbox').prop('checked', true);
 };
 
 function un_select_all() {
-    $("#cover").fadeIn(100);
-    var list_no = $("#filter_by_list_no").val();
-    var date = $("#datepicker").val()
-    $.ajax({
-        type: "POST",
-        url: "/un_mark_to_active/",
-        headers: {
-            'X-CSRFToken': csrftoken
-        },
-        data: "date=" + date + "&list_no=" + list_no,
-        success: function(msg){
-            $('input:checkbox').prop('checked', false);
-            var count = $(":checkbox:checked").length;
-            $("#counter").html(count);
-            $("#cover").fadeOut(100);
-        },
-        error: function(ts) {
-            alert(ts.responseText)
-        },
-    });
+    $(':checkbox.lead_checkbox').prop('checked', false);
 };
