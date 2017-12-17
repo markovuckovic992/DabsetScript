@@ -2,12 +2,34 @@ import requests
 from bs4 import BeautifulSoup as BS
 from os import popen
 from selenium import webdriver
+import progressbar as pb
 import json
 import whois
+import time
 
 from django.utils import timezone
 from backend.models import Lead, LeadType
 
+
+class progress_timer:
+    def __init__(self, n_iter, description="Something"):
+        self.n_iter = n_iter
+        self.iter = 0
+        self.description = description + ': '
+        self.timer = None
+        self.initialize()
+
+    def initialize(self):
+        widgets = [self.description, pb.Percentage(), ' ',
+                   pb.Bar(marker=pb.RotatingMarker()), ' ', pb.ETA()]
+        self.timer = pb.ProgressBar(widgets=widgets, maxval=self.n_iter).start()
+
+    def update(self, q=1):
+        self.timer.update(self.iter)
+        self.iter += q
+
+    def finish(self):
+        self.timer.finish()
 
 def saveData(dicts):
     for dict_ in dicts:
@@ -32,7 +54,7 @@ def checkIsMobileFriendly(domain):
             return -1
 
 
-def checkIfHasVideo(domain, driver):
+def checkIfHasVideo(domain):
     url = 'https://' + domain
 
     try:
@@ -42,7 +64,11 @@ def checkIfHasVideo(domain, driver):
         condition = False
 
     if condition:
-        driver.get(url)
+        pass
+        # try:
+        #     driver.get(url)
+        # except:
+        #     return -1
     else:
         condition = True
         url = 'http://' + domain
@@ -52,11 +78,16 @@ def checkIfHasVideo(domain, driver):
         except:
             condition = False
         if condition:
-            driver.get(url)
+            pass
+            # try:
+            #     driver.get(url)
+            # except:
+            #     return -1
         else:
             return -1
 
-    soup = BS(driver.page_source, 'lxml')
+    # soup = BS(driver.page_source, 'lxml')
+    soup = BS(resp.content, 'lxml')    
     videos = soup.find_all(["embed","object","param","video", "iframe"])
     if len(videos):
         return True
@@ -66,6 +97,8 @@ def checkIfHasVideo(domain, driver):
 def getEmail(domain):
     try:    
         emails = whois.whois(domain).emails  
+        if '@' in emails:
+            return emails
         for email in emails:
             if len(email) < 30:
                 return email
@@ -77,7 +110,9 @@ def getEmail(domain):
     # return response.replace('Registrant Email:', '').lstrip().rstrip()
 
 
-def process(keywords, zone_files):    
+def process(keywords, zone_files):  
+
+    start_time = time.time()  
     driver = webdriver.PhantomJS()
     lead_type = LeadType.objects.get(name="raw_lead")
     dicts = []
@@ -92,32 +127,43 @@ def process(keywords, zone_files):
             for keyword in keywords[1:]:
                 matched_lines = [line.lower() for line in matched_lines if keyword.lower() in line.lower()]
 
+        print '--------------------------\n', str(len(matched_lines)), '\n--------------------------'
+        pt = progress_timer(description='process: ', n_iter=len(matched_lines))
         for line in matched_lines:
-            is_mobile_friendly = False
-            has_video = False
-            if checkIsMobileFriendly(line):
-                is_mobile_friendly = True
-            if checkIfHasVideo(line, driver):
-                has_video = True
+            mail = ''
+            # mail = getEmail(line)
+            # if mail == -1:
+            #     pt.update()
+            #     continue
+            is_mobile_friendly = True
+            has_video = True
+            # is_mobile_friendly = checkIsMobileFriendly(line)
+            # if is_mobile_friendly == -1:
+            #     pt.update()
+            #     continue
+            has_video = checkIfHasVideo(line)
+            if has_video == -1:
+                pt.update()
+                continue
 
-            mail = getEmail(line)
-
-            if mail != -1 and has_video != -1 and has_video != -1:
-                kwrds = ''
-                for keyword in keywords:
-                    kwrds += keyword + ' '
-                dicts.append({
-                    'keywords': kwrds,
-                    'domain': line,
-                    'mail': mail,
-                    'has_video': has_video,
-                    'is_mobile_friendly': is_mobile_friendly,
-                    'lead_type': lead_type,
-                    'datetime_of_last_change': timezone.now(),
-                })
+            kwrds = ''
+            for keyword in keywords:
+                kwrds += keyword + ' '
+            dicts.append({
+                'keywords': kwrds,
+                'domain': line,
+                'mail': mail,
+                'has_video': has_video,
+                'is_mobile_friendly': is_mobile_friendly,
+                'lead_type': lead_type,
+                'datetime_of_last_change': timezone.now(),
+            })
+            pt.update()
 
     saveData(dicts)
 
+    print '--------------------------\n', (time.time() - start_time), '\n--------------------------'
+
 
 if __name__ == "__main__":
-    print getEmail('youtube.com')
+    print checkIfHasVideo('funnelexpert.com')

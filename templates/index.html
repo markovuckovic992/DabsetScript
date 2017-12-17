@@ -37,7 +37,7 @@
             </div>
 
             <div class="form-group col-sm-12 row">
-                <button type="submit" class="btn btn-primary">Start Process</button>
+                <button type="submit" id="start_process_btn" class="btn btn-primary">Start Process</button>
             </div>
         </form>
 
@@ -81,6 +81,10 @@
           }
           changeSetting($(this).attr('id'), $(this).attr('value'));
         });
+
+        $('#start_process_btn').on('click', function (event) {
+            $('#cover').show();
+        })
       } );
     </script>
 {% endblock %}

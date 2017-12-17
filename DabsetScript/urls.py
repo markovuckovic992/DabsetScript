@@ -25,7 +25,6 @@ urlpatterns = [
     # Raw Leads
     url(r'^raw_leads/', backend.views.rawLeads),
     url(r'^mark_as_good/', backend.views.markAsGood),
-    url(r'^tuncate_leads/', backend.views.tuncateLeads),
     # Active Leads
     url(r'^active_leads/', backend.views.activeLeads),
     # Sent Leads
@@ -35,4 +34,6 @@ urlpatterns = [
     url(r'^save_template/', backend.views.saveTemplate),
     # Logs
     url(r'^logs/', backend.views.logs),
+    # Features
+    url(r'^tuncate_leads/', backend.views.tuncateLeads),
 ]

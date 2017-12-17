@@ -13,11 +13,11 @@ function truncate_raw() {
         var date = $("#datepicker").val();
         $.ajax({
             type: "POST",
-            url: "/truncate/",
+            url: "/tuncate_leads/",
             headers: {
                 'X-CSRFToken': csrftoken
             },
-            data: "date=" + date + "&activated=0",
+            data: "date=" + date + "&lead_type=raw_lead",
             success: function (msg) {
                 $("#cover").fadeOut(100);
                 alert("It's Done!");

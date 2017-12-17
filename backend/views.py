@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from backend.models import Template, Lead, LeadType, ActionLogs
 from script import process
@@ -31,7 +31,7 @@ def startProcess(request):
 
     # print files, keywords
     process(keywords, files)
-    return HttpResponseRedirect('/raw_leads/')
+    return HttpResponse('sucess')
 
 
 def rawLeads(request):
@@ -50,12 +50,20 @@ def markAsGood(request):
     jd = json.dumps(ids)
     ids = eval(json.loads(jd))
     # end of function
-    return HttpResponseRedirect('/raw_leads/')
+    lead_type = LeadType.objects.get(name='active_lead')
+    Lead.objects.filter(id__in=ids).update(lead_type=lead_type)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def tuncateLeads(request):
-    # Delete function
-    return HttpResponseRedirect('/raw_leads/')
+    if 'date' in request.POST:
+        date = datetime.strptime(request.POST['date'], '%d-%m-%Y')
+    else:
+        date = datetime.now().date()
+    lead_type = LeadType.objects.get(name=request.POST['lead_type'])
+
+    Lead.objects.filter(date=date, lead_type=lead_type).delete()
+    return HttpResponse('sucess')
 
 
 def activeLeads(request):
