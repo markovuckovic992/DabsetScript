@@ -54,7 +54,7 @@ def checkIsMobileFriendly(domain):
         return -1
 
 
-def checkIfHasVideo(domain):
+def checkIfHasVideo(domain, driver):
     url = 'http://' + domain
 
     try:
@@ -77,20 +77,19 @@ def checkIfHasVideo(domain):
     #         condition = True if int(resp.status_code) == 200 else False
     #     except:
     #         condition = False
-    #     if condition:
-    #         pass
-    #         # try:
-    #         #     driver.get(url)
-    #         # except:
-    #         #     return -1
-    #     else:
-    #         return -1
+    if condition:
+        try:
+            driver.get(url)
+        except:
+            return -1
+    else:
+        return -1
 
     if not condition:
         return -1
 
-    # soup = BS(driver.page_source, 'lxml')
-    soup = BS(resp.content, 'lxml')
+    soup = BS(driver.page_source, 'lxml')
+    # soup = BS(resp.content, 'lxml')
     videos = soup.find_all(["embed", "object", "param", "video", "iframe"])
     if len(videos):
         return True
@@ -145,7 +144,7 @@ def process(keywords, zone_files):
                 pt.update()
                 continue
             # has_video = True
-            has_video = checkIfHasVideo(line)
+            has_video = checkIfHasVideo(line, driver)
             if has_video == -1:
                 pt.update()
                 continue
