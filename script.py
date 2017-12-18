@@ -1,4 +1,4 @@
-import requests
+oimport requests
 from bs4 import BeautifulSoup as BS
 from os import popen
 from selenium import webdriver
@@ -38,24 +38,24 @@ def saveData(dicts):
 
 
 def checkIsMobileFriendly(domain):
-    try:
-        url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
-        resp = requests.get(url)
-        resp = resp.json()
-        return resp['ruleGroups']['USABILITY']['pass']
-    except:        
-        url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
-        resp = requests.get(url)
-        resp = resp.json()
+    # try:
+    #     url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
+    #     resp = requests.get(url)
+    #     resp = resp.json()
+    #     return resp['ruleGroups']['USABILITY']['pass']
+    # except:
+    url = 'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?url=http://' + domain
+    resp = requests.get(url)
+    resp = resp.json()
 
-        try:
-            return resp['ruleGroups']['USABILITY']['pass']
-        except:
-            return -1
+    try:
+        return resp['ruleGroups']['USABILITY']['pass']
+    except:
+        return -1
 
 
 def checkIfHasVideo(domain):
-    url = 'https://' + domain
+    url = 'http://' + domain
 
     try:
         resp = requests.get(url)
@@ -63,40 +63,43 @@ def checkIfHasVideo(domain):
     except:
         condition = False
 
-    if condition:
-        pass
-        # try:
-        #     driver.get(url)
-        # except:
-        #     return -1
-    else:
-        condition = True
-        url = 'http://' + domain
-        try:
-            resp = requests.get(url)
-            condition = True if int(resp.status_code) == 200 else False            
-        except:
-            condition = False
-        if condition:
-            pass
-            # try:
-            #     driver.get(url)
-            # except:
-            #     return -1
-        else:
-            return -1
+    # if condition:
+    #     pass
+    #     # try:
+    #     #     driver.get(url)
+    #     # except:
+    #     #     return -1
+    # else:
+    #     condition = True
+    #     url = 'https://' + domain
+    #     try:
+    #         resp = requests.get(url)
+    #         condition = True if int(resp.status_code) == 200 else False
+    #     except:
+    #         condition = False
+    #     if condition:
+    #         pass
+    #         # try:
+    #         #     driver.get(url)
+    #         # except:
+    #         #     return -1
+    #     else:
+    #         return -1
+
+    if not condition:
+        return -1
 
     # soup = BS(driver.page_source, 'lxml')
-    soup = BS(resp.content, 'lxml')    
-    videos = soup.find_all(["embed","object","param","video", "iframe"])
+    soup = BS(resp.content, 'lxml')
+    videos = soup.find_all(["embed", "object", "param", "video", "iframe"])
     if len(videos):
         return True
     else:
         return False
 
 def getEmail(domain):
-    try:    
-        emails = whois.whois(domain).emails  
+    try:
+        emails = whois.whois(domain).emails
         if '@' in emails:
             return emails
         for email in emails:
@@ -110,9 +113,9 @@ def getEmail(domain):
     # return response.replace('Registrant Email:', '').lstrip().rstrip()
 
 
-def process(keywords, zone_files):  
+def process(keywords, zone_files):
 
-    start_time = time.time()  
+    start_time = time.time()
     driver = webdriver.PhantomJS()
     lead_type = LeadType.objects.get(name="raw_lead")
     dicts = []
