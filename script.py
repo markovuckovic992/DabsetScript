@@ -1,4 +1,4 @@
-oimport requests
+import requests
 from bs4 import BeautifulSoup as BS
 from os import popen
 from selenium import webdriver
@@ -97,6 +97,7 @@ def checkIfHasVideo(domain):
     else:
         return False
 
+
 def getEmail(domain):
     try:
         emails = whois.whois(domain).emails
@@ -133,17 +134,17 @@ def process(keywords, zone_files):
         print '--------------------------\n', str(len(matched_lines)), '\n--------------------------'
         pt = progress_timer(description='process: ', n_iter=len(matched_lines))
         for line in matched_lines:
-            mail = ''
-            # mail = getEmail(line)
-            # if mail == -1:
-            #     pt.update()
-            #     continue
-            is_mobile_friendly = True
-            has_video = True
-            # is_mobile_friendly = checkIsMobileFriendly(line)
-            # if is_mobile_friendly == -1:
-            #     pt.update()
-            #     continue
+            # mail = ''
+            mail = getEmail(line)
+            if mail == -1:
+                pt.update()
+                continue
+            # is_mobile_friendly = True
+            is_mobile_friendly = checkIsMobileFriendly(line)
+            if is_mobile_friendly == -1:
+                pt.update()
+                continue
+            # has_video = True
             has_video = checkIfHasVideo(line)
             if has_video == -1:
                 pt.update()
