@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
 
-from backend.models import Template, Lead, LeadType, ActionLogs
+from backend.models import Template, Lead, ActionLogs  # , LeadType
 from script import process
 from custom_email import customEmail
 
@@ -71,9 +71,9 @@ def tuncateLeads(request):
         date = datetime.strptime(request.POST['date'], '%d-%m-%Y')
     else:
         date = datetime.now().date()
-    lead_type = LeadType.objects.get(name=request.POST['lead_type'])
+    # lead_type = LeadType.objects.get(name=request.POST['lead_type'])
 
-    Lead.objects.filter(date=date, lead_type=lead_type).delete()
+    Lead.objects.filter(date=date).delete()
     return HttpResponse('sucess')
 
 
@@ -126,8 +126,8 @@ def saveTemplate(request):
 
 
 def sentLeads(request):
-    sent_lead_type = LeadType.objects.get(name='sent_lead')
-    leads = Lead.objects.filter(lead_type=sent_lead_type)
+    # sent_lead_type = LeadType.objects.get(name='sent_lead')
+    # leads = Lead.objects.filter(lead_type=sent_lead_type)
     return render(request, 'sent_leads.html', {'leads': leads})
 
 

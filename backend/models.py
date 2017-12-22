@@ -80,4 +80,3 @@ class ActionLogs(models.Model):
     class Meta:
         db_table = "action_logs"
 
-

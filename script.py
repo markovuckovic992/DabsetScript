@@ -8,7 +8,7 @@ import whois
 import time
 
 from django.utils import timezone
-from backend.models import Lead, LeadType
+from backend.models import Lead  #, LeadType
 
 
 class progress_timer:
@@ -118,7 +118,7 @@ def process(keywords, zone_files):
 
     start_time = time.time()
     driver = webdriver.PhantomJS()
-    lead_type = LeadType.objects.get(name="raw_lead")
+    # lead_type = LeadType.objects.get(name="raw_lead")
     dicts = []
 
     for file in zone_files:
@@ -159,7 +159,7 @@ def process(keywords, zone_files):
                 'mail': mail,
                 'has_video': has_video,
                 'is_mobile_friendly': is_mobile_friendly,
-                'lead_type': lead_type,
+                # 'lead_type': lead_type,
                 'datetime_of_last_change': timezone.now(),
             })
             pt.update()
