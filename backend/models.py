@@ -14,11 +14,11 @@ class Template(models.Model):
         db_table = "templates"
 
 
-class LeadType(models.Model):
-    name = models.CharField(max_length=15)
+# class LeadType(models.Model):
+#     name = models.CharField(max_length=15)
 
-    class Meta:
-        db_table = "lead_types"
+#     class Meta:
+#         db_table = "lead_types"
 
 
 class Lead(models.Model):
@@ -28,11 +28,10 @@ class Lead(models.Model):
     has_video = models.SmallIntegerField(default=0)
     is_mobile_friendly = models.SmallIntegerField(default=0)
 
-    lead_type = models.ForeignKey(LeadType)
-    template = models.ForeignKey(Template, blank=True, null=True)
-    sent_count = models.SmallIntegerField(default=0)
+    # lead_type = models.ForeignKey(LeadType)
+    # sent_count = models.SmallIntegerField(default=0)
     date = models.DateField(default=timezone.now)
-    datetime_of_last_change = models.DateTimeField(default=None)
+    # datetime_of_last_change = models.DateTimeField(default=None)
 
     class Meta:
         db_table = "leads"
@@ -54,6 +53,22 @@ class Lead(models.Model):
                     except:
                         pass
         super(Lead, self).save(*args, **kw)
+
+
+class Campaign(models.Model):
+    name = models.CharField(max_length=10)
+    leads = models.ManyToManyField(Lead, blank=True, null=True)
+    template = models.ForeignKey(Template, blank=True, null=True)
+
+
+class CampaignLog(models.Model):
+    campaign_id = models.CharField(max_length=10)
+    number_of_sent = models.IntegerField(default=0)
+    number_of_recieved = models.IntegerField(default=0)
+    template_name = models.CharField(max_length=10)
+    leads = models.ManyToManyField(Lead, blank=True, null=True)
+    completed = models.SmallIntegerField(default=0)
+    last_id = models.IntegerField(default=0)
 
 
 class ActionLogs(models.Model):

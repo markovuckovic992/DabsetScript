@@ -101,7 +101,7 @@ function find_active() {
     });
 };
 
-function changestate(id, e) {
+function changestate(e) {
     var $chkboxes = $(':checkbox');
 
     if(e.shiftKey) {
@@ -113,34 +113,6 @@ function changestate(id, e) {
         for (var i = 0; i < checks.length; i += 1) {
             ids.push($(checks[i]).attr('id'))
         }
-        $.ajax({
-            type: "POST",
-            url: "/reverse_state/",
-            headers: {
-                'X-CSRFToken': csrftoken
-            },
-            data: {'ids': JSON.stringify(ids), 'foo': lastChecked.checked},
-            success: function (msg) {
-                var count = $(":checkbox:checked").length;
-                $("#counter").html(count);
-            },
-            error: function(ts) {
-                alert(ts.responseText)
-            },
-        });
-    } else {
-        $.ajax({
-            type: "POST",
-            url: "/reverse_state/",
-            headers: {
-                'X-CSRFToken': csrftoken
-            },
-            data: "id=" + id,
-            success: function (msg) {
-                var count = $(":checkbox:checked").length;
-                $("#counter").html(count);
-            },
-        });
     }
     lastChecked = e.target;
 };
@@ -222,10 +194,12 @@ function mark_as_good() {
         ids.push($(checks[i]).attr('id'));
     }
 
+    var name_of_campaign = prompt("Enter name of campaign : ", "your campaign name here...");
+
     $.ajax({
         type: "POST",
         url: "/mark_as_good/",
-        data: {'ids': JSON.stringify(ids)},
+        data: {'ids': JSON.stringify(ids), 'name_of_campaign': name_of_campaign},
         headers: {
             'X-CSRFToken': csrftoken
         },

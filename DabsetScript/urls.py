@@ -23,12 +23,12 @@ urlpatterns = [
     url(r'^$', backend.views.home),
     url(r'^start_process/', backend.views.startProcess),
     # Raw Leads
-    url(r'^raw_leads/', backend.views.rawLeads),
+    url(r'^leads/', backend.views.Leads),
     url(r'^mark_as_good/', backend.views.markAsGood),
-    # Active Leads
-    url(r'^active_leads/', backend.views.activeLeads),
+    # Campaigns
+    url(r'^campaigns/', backend.views.Campaigns),
     # Sent Leads
-    url(r'^sent_leads/', backend.views.sentLeads),
+    url(r'^send_campaign/', backend.views.sendCampaign),
     # Templates
     url(r'^templates/', backend.views.templatesHome),
     url(r'^save_template/', backend.views.saveTemplate),

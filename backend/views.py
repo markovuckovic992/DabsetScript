@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from datetime import datetime
+import itertools
 
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
@@ -34,24 +35,34 @@ def startProcess(request):
     return HttpResponse('sucess')
 
 
-def rawLeads(request):
+def Leads(request):
     if 'date' in request.GET:
         date = datetime.strptime(request.GET['date'], '%d-%m-%Y')
     else:
         date = datetime.now().date()
-    raw_lead_type = LeadType.objects.get(name='raw_lead')
-    leads = Lead.objects.filter(lead_type=raw_lead_type, date=date)
-    return render(request, 'raw_leads.html', {'leads': leads})
+    # raw_lead_type = LeadType.objects.get(name='raw_lead')
+    leads = Lead.objects.filter(date=date)
+    return render(request, 'leads.html', {'leads': leads})
 
 
 def markAsGood(request):
     # Mark as good function
+    name_of_campaign = request.POST.get('name_of_campaign')
     ids = request.POST.get('ids')
     jd = json.dumps(ids)
     ids = eval(json.loads(jd))
     # end of function
-    lead_type = LeadType.objects.get(name='active_lead')
-    Lead.objects.filter(id__in=ids).update(lead_type=lead_type)
+    leads = Lead.objects.filter(id__in=ids)
+    campaign = Campaign(
+        name=name_of_campaign,
+    ).save()
+
+    ids = set(lead.id for lead in leads)
+    leads = itertools.ifilter(lambda x: x.id not in ids, leads)
+    campaign.add(*leads)
+    campaign.save()
+    # lead_type = LeadType.objects.get(name='active_lead')
+    # Lead.objects.filter(id__in=ids).update(lead_type=lead_type)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -66,10 +77,9 @@ def tuncateLeads(request):
     return HttpResponse('sucess')
 
 
-def activeLeads(request):
-    active_lead_type = LeadType.objects.get(name='active_lead')
-    leads = Lead.objects.filter(lead_type=active_lead_type)
-    return render(request, 'active_leads.html', {'leads': leads})
+def Campaigns(request):
+    campaigns = Campaign.objects.all()
+    return render(request, 'campaigns.html', {'campaigns': campaigns})
 
 
 def templatesHome(request):
@@ -108,11 +118,10 @@ def saveTemplate(request):
     id = int(request.POST['id'])
 
     if id != 0:
-        updateTemplate(subject, body, name, id)        
+        updateTemplate(subject, body, name, id)
     else:
         makeTemplate(subject, body, name)
 
-    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -125,6 +134,24 @@ def sentLeads(request):
 def logs(request):
     logs = ActionLogs.objects.all().order_by('-id')[:1000]
     return render(request, 'logs.html', {'logs': logs})
+
+
+def sendCampaign(request):
+    ids = request.POST.get('ids')
+    jd = json.dumps(ids)
+    ids = eval(json.loads(jd))
+
+    leads = Lead.objects.filter(id__in=ids)
+    campaign_log = CampaignLog(
+        campaign_id=campaign_id,
+        template_name=template_name,
+    ).save()
+
+    ids = set(lead.id for lead in leads)
+    leads = itertools.ifilter(lambda x: x.id not in ids, leads)
+    campaign_log.add(*leads)
+
+    campaign_log.save()
 
 
 def sendEmails(request):

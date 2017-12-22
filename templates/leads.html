@@ -36,7 +36,7 @@
                         <td>{{ lead.has_video }} </td>
                         <td>{{ lead.is_mobile_friendly }} </td>
                         <td>{{ lead.date|date:"M d, Y" }} </td>
-                        <td><input type="checkbox" class="form-control lead_checkbox" id="{{ lead.id }}"/></td>
+                        <td><input type="checkbox" class="form-control lead_checkbox" id="{{ lead.id }}" onclick="changestate(event)"/></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -61,7 +61,6 @@
 
             "aoColumnDefs" : [
                 {
-                   // 'bSortable' : false,
                    'aTargets' : [ 'no-sort' ]
                 }
             ],
@@ -75,7 +74,7 @@
         var selected_date = (window.location.search).replace('?date=', '').split("-");
         var new_date = new Date(selected_date[2], selected_date[1] - 1, selected_date[0]);
         $( "#datepicker" ).datepicker().datepicker("setDate", new_date);
-        $( "#datepicker" ).datepicker("option", "dateFormat", 'dd-mm-yy');        
+        $( "#datepicker" ).datepicker("option", "dateFormat", 'dd-mm-yy');
       } );
       $("#Filt").addClass('active');
       $("#Base").removeClass();

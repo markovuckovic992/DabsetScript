@@ -77,6 +77,7 @@ def checkIfHasVideo(domain, driver):
     #         condition = True if int(resp.status_code) == 200 else False
     #     except:
     #         condition = False
+
     if condition:
         try:
             driver.get(url)
